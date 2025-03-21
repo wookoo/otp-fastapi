@@ -23,12 +23,15 @@ def send_email_with_inline_qr(to_email, qr_data):
     msg['To'] = to_email
 
     # 4. HTML 본문 작성 (이미지를 cid로 삽입)
-    html = """
+    html = f"""
     <html>
       <body>
         <p>안녕하세요,<br>
            아래 QR 코드를 확인해주세요:<br>
            <img src="cid:qrcode_image">
+           QR코드 스캔이 어려우다면 아래 코드를 입력해주세요.
+           <br>
+           {qr_data}
         </p>
       </body>
     </html>

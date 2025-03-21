@@ -19,3 +19,13 @@ class MemberCreate(BaseModel):
         if 'password' in info.data and value != info.data['password']:
             raise ValueError("비밀번호가 일치하지 않습니다.")
         return value
+
+
+class MemberLoginPassword(BaseModel):
+    email: EmailStr
+    password: str
+    @field_validator('email', 'password')
+    def not_empty(cls, value):
+        if not value or not value.strip():
+            raise ValueError("빈값은 허용하지 않습니다.")
+        return value

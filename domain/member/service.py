@@ -1,4 +1,6 @@
-from fastapi import BackgroundTasks
+
+from fastapi import BackgroundTasks, HTTPException
+from starlette import status
 
 from domain.member.schema import MemberCreate
 from models import Member
@@ -9,7 +11,11 @@ from utils.mail import send_email_with_inline_qr
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
-async def create_member(db:Session, member_create: MemberCreate, background_tasks: BackgroundTasks):
+def create_member(db:Session, member_create: MemberCreate, background_tasks: BackgroundTasks):
+
+    if exists_by_email(db,member_create=member_create):
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT,detail="이미 존재하는 사용자 입니다.")
+
 
     code = ''.join(random.choices('0123456789', k=10))
     member = Member(
@@ -22,3 +28,8 @@ async def create_member(db:Session, member_create: MemberCreate, background_task
     db.commit()
 
     background_tasks.add_task(send_email_with_inline_qr,member.email,code)
+
+def exists_by_email(db: Session, member_create :MemberCreate):
+    return db.query(Member).filter(
+        Member.email == member_create.email
+    ).first()

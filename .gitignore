@@ -1,0 +1,10 @@
+.idea
+*.pyc
+__pycache__
+migrations
+alembic.ini
+.env
+logs
+.deta
+*.iml
+*.db
